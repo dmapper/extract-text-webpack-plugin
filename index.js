@@ -80,9 +80,13 @@ function isInvalidOrder(a, b) {
 	return aBeforeB && bBeforeA;
 }
 
-function getOrder(a, b) {
-	var aOrder = a.getOrder();
-	var bOrder = b.getOrder();
+function getOrder(a, b, searchParams) {
+	var aOrder = a.getPriorityOrder(searchParams);
+	var bOrder = b.getPriorityOrder(searchParams);
+	if(aOrder < bOrder) return -1;
+	if(aOrder > bOrder) return 1;
+	aOrder = a.getOrder();
+	bOrder = b.getOrder();
 	if(aOrder < bOrder) return -1;
 	if(aOrder > bOrder) return 1;
 	var aIndex = a.getOriginalModule().index2;
@@ -293,7 +297,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 							compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
 							compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
 						}
-						return getOrder(a, b);
+						return getOrder(a, b, options.priorityModules);
 					});
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);

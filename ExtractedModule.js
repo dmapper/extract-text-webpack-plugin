@@ -16,6 +16,28 @@ function ExtractedModule(identifier, originalModule, source, sourceMap, addtitio
 }
 module.exports = ExtractedModule;
 
+ExtractedModule.prototype.getPriorityOrder = function(searchParams) {
+	var line;
+
+	if (!searchParams) return 0;
+
+	if (!Array.isArray(searchParams)) {
+		searchParams = [searchParams]
+	}
+
+	for (var i = 0; i <= searchParams.length; i++){
+		line = searchParams[i];
+
+		if (line instanceof RegExp) {
+			if (line.test(this._identifier)) return 0
+		} else {
+			if (this._identifier.indexOf(line) !== -1) return 0
+		}
+	}
+
+	return 1;
+};
+
 ExtractedModule.prototype.getOrder = function() {
 	// http://stackoverflow.com/a/14676665/1458162
 	return /^@import url/.test(this._source) ? 0 : 1;
